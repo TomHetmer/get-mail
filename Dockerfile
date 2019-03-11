@@ -4,7 +4,7 @@ ENV ZAMMAD_DIR /home/zammad
 
 RUN apt-get update -qq && apt-get install -y python3
 
-WORKDIR /smtp
-ADD server.py /smtp/
+WORKDIR /get-mai
+ADD server.py /get-mail
 
 CMD ["python3", "server.py"]
