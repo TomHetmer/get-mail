@@ -8,7 +8,8 @@ from subprocess import Popen, PIPE
 import SocketServer
 import cgi
 import os
-import hashlib, hmac
+import hashlib
+import hmac
 
 def verify_token(token, timestamp, signature):
     hmac_digest = hmac.new(key=os.environ['MAILGUN_API_KEY'],
@@ -24,29 +25,30 @@ class S(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
         self._set_headers()
-        
+
     def do_POST(self):
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
+            environ={'REQUEST_METHOD': 'POST',
+                     'CONTENT_TYPE': self.headers['Content-Type'],
                      })
 
         if verify_token(form.getvalue('token'), form.getvalue('timestamp'), form.getvalue('signature')):
-            message = form['body-mime']
-            pipe = Popen("echo bundle exec rails r 'Channel::Driver::MailStdin.new(trusted: true)'", shell=True, cwd=os.environ['ZAMMAD_DIR'], stdin=PIPE).stdin
+            message = form.getvalue('body-mime')
+            cmd = "echo bundle exec rails r 'Channel::Driver::MailStdin.new(trusted: true)'"
+            pipe = Popen(cmd, shell=True, cwd=os.environ['ZAMMAD_DIR'], stdin=PIPE).stdin
             pipe.write(message.encode('utf-8'))
             pipe.close()
             self._set_headers()
             return
-        
+
         self.send_response(500)
-        
+
 def run(server_class=HTTPServer, handler_class=S, port=1337):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print 'Starting get-mail...'
+    print('Starting get-mail...')
     httpd.serve_forever()
 
 if __name__ == "__main__":
