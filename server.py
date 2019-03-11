@@ -27,6 +27,8 @@ class S(BaseHTTPRequestHandler):
         self._set_headers()
 
     def do_POST(self):
+        self._set_headers()
+
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
@@ -40,10 +42,7 @@ class S(BaseHTTPRequestHandler):
             pipe = Popen(cmd, shell=True, cwd=os.environ['ZAMMAD_DIR'], stdin=PIPE).stdin
             pipe.write(message.encode('utf-8'))
             pipe.close()
-            self._set_headers()
             return
-
-        self.send_response(500)
 
 def run(server_class=HTTPServer, handler_class=S, port=1337):
     server_address = ('', port)
