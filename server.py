@@ -3,9 +3,9 @@
 # loosely based on
 # https://github.com/mraerino/zammad-smtp-receiver/blob/master/server.py
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from subprocess import Popen, PIPE
-import SocketServer
+import socketserver
 import cgi
 import os
 import hashlib
