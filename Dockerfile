@@ -1,4 +1,4 @@
-FROM zammad/zammad-docker-compose:zammad
+FROM zammad/zammad-docker-compose:zammad-2.9.0-13
 
 ENV ZAMMAD_DIR /home/zammad
 
